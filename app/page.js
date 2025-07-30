@@ -398,6 +398,22 @@ export default function BTLCalculator() {
                   />
                 </div>
               </div>
+              
+              {inputs.rentalType === 'airbnb' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
+                  <div className="relative">
+                    <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.estimatedLongTermRent}
+                      onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
+                </div>
+              )}
             </div>
             
             {/* Rental Income */}
@@ -459,20 +475,6 @@ export default function BTLCalculator() {
                       />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">Plus £300/month fixed fee</p>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
-                    <div className="relative">
-                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={inputs.estimatedLongTermRent}
-                        onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
                   </div>
                 </>
               ) : (
