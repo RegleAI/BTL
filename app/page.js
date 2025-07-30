@@ -14,6 +14,7 @@ export default function BTLCalculator() {
     occupancyRate: 70,
     avgPricePerNight: 180,
     monthlyRentAST: 1800,
+    estimatedLongTermRent: 1500,
     councilTax: 183.75,
     utilities: 150,
     renovationCost: 5000,
@@ -208,10 +209,13 @@ export default function BTLCalculator() {
     // ROI (using net annual profit after corporation tax)
     const roi = (netAnnualProfit / totalMoneyIn) * 100;
     
-    // Mortgage stress test (5.5% rate)
+    // Mortgage stress test (5.5% rate) - uses different rental values
     const stressTestRate = 5.5;
     const stressTestMonthlyPayment = (mortgageAmount * (stressTestRate / 100) / 12);
     const minRequiredRent = stressTestMonthlyPayment * 1.25;
+    
+    // For stress test comparison - use estimated long term rent for Airbnb, actual rent for AST
+    const stressTestRentalIncome = inputs.rentalType === 'airbnb' ? inputs.estimatedLongTermRent : inputs.monthlyRentAST;
 
     setCalculations({
       daysOccupiedPerMonth: daysOccupiedPerMonth.toFixed(1),
@@ -231,7 +235,8 @@ export default function BTLCalculator() {
       netAnnualProfit: netAnnualProfit.toFixed(2),
       roi: roi.toFixed(2),
       minRequiredRent: minRequiredRent.toFixed(2),
-      passesStressTest: monthlyIncomeFromRental >= minRequiredRent
+      stressTestRentalIncome: stressTestRentalIncome.toFixed(2),
+      passesStressTest: stressTestRentalIncome >= minRequiredRent
     });
   }, [inputs]);
 
@@ -455,6 +460,20 @@ export default function BTLCalculator() {
                     </div>
                     <p className="text-xs text-gray-500 mt-1">Plus £300/month fixed fee</p>
                   </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
+                    <div className="relative">
+                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.estimatedLongTermRent}
+                        onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
+                  </div>
                 </>
               ) : (
                 <>
@@ -611,11 +630,19 @@ export default function BTLCalculator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-700">Minimum Required Rent: {formatCurrency(calculations.minRequiredRent)}/month</p>
+                <p className="text-gray-700">
+                  {inputs.rentalType === 'airbnb' ? 'Estimated Long Term Rent' : 'Your AST Rent'}: {formatCurrency(calculations.stressTestRentalIncome)}/month
+                </p>
               </div>
               <div className={`text-2xl font-bold ${calculations.passesStressTest ? 'text-green-600' : 'text-red-600'}`}>
                 {calculations.passesStressTest ? '✅ PASS' : '❌ FAIL'}
               </div>
             </div>
+            {inputs.rentalType === 'airbnb' && (
+              <p className="text-xs text-gray-500 mt-2">
+                * Stress test uses estimated long-term rental value, not Airbnb income
+              </p>
+            )}
           </div>
           
           {/* Stamp Duty Breakdown */}
