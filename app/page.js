@@ -189,19 +189,23 @@ export default function BTLCalculator() {
     
     // Corporation tax calculation with UK thresholds (2025 rates)
     let corporationTax = 0;
+    let effectiveTaxRate = 0;
     if (annualProfit > 0) {
       if (annualProfit <= 50000) {
         // Small profits rate: 19%
         corporationTax = annualProfit * 0.19;
+        effectiveTaxRate = 19.0;
       } else if (annualProfit <= 250000) {
         // Marginal relief zone: gradual increase from 19% to 25%
         // Standard calculation: 25% with marginal relief deduction
         const standardTax = annualProfit * 0.25;
         const marginalRelief = (250000 - annualProfit) * (3/200); // 3/200 = 0.015 marginal relief fraction
         corporationTax = standardTax - marginalRelief;
+        effectiveTaxRate = (corporationTax / annualProfit) * 100;
       } else {
         // Main rate: 25%
         corporationTax = annualProfit * 0.25;
+        effectiveTaxRate = 25.0;
       }
     }
     const netAnnualProfit = annualProfit - corporationTax;
@@ -227,6 +231,7 @@ export default function BTLCalculator() {
       monthlyProfit: monthlyProfit.toFixed(2),
       annualProfit: annualProfit.toFixed(2),
       corporationTax: corporationTax.toFixed(2),
+      effectiveTaxRate: effectiveTaxRate.toFixed(1),
       netAnnualProfit: netAnnualProfit.toFixed(2),
       roi: roi.toFixed(2),
       minRequiredRent: minRequiredRent.toFixed(2),
@@ -541,7 +546,7 @@ export default function BTLCalculator() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-700">Corporation Tax (19%)</span>
+                  <span className="text-gray-700">Corporation Tax ({calculations.effectiveTaxRate}%)</span>
                   <span className="font-medium text-red-700">-{formatCurrency(calculations.corporationTax)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-purple-200">
