@@ -22,7 +22,8 @@ export default function BTLCalculator() {
     arrangementFee: 4000,
     country: 'england',
     propertyType: 'additional',
-    rentalType: 'airbnb'
+    rentalType: 'airbnb',
+    purchaseMethod: 'mortgage'
   });
 
   const [calculations, setCalculations] = useState({});
@@ -162,15 +163,26 @@ export default function BTLCalculator() {
     const monthlyIncomeAirbnb = daysOccupiedPerMonth * avgPricePerNight;
     const monthlyIncomeFromRental = inputs.rentalType === 'airbnb' ? monthlyIncomeAirbnb : inputs.monthlyRentAST;
     
-    const depositAmount = purchasePrice * (depositPercent / 100);
-    const mortgageAmount = purchasePrice - depositAmount;
+    // Calculate deposit and mortgage amounts based on purchase method
+    const depositAmount = inputs.purchaseMethod === 'mortgage' 
+      ? purchasePrice * (depositPercent / 100)
+      : purchasePrice; // Full purchase price if buying with cash
+    
+    const mortgageAmount = inputs.purchaseMethod === 'mortgage' 
+      ? purchasePrice - depositAmount
+      : 0; // No mortgage if buying with cash
+      
     const stampDuty = calculateStampDuty(purchasePrice, country, propertyType);
     
-    // Total money in
-    const totalMoneyIn = depositAmount + stampDuty + legalBrokerFees + renovationCost;
+    // Total money in (different labels for cash vs mortgage)
+    const totalMoneyIn = inputs.purchaseMethod === 'mortgage'
+      ? depositAmount + stampDuty + legalBrokerFees + renovationCost
+      : purchasePrice + stampDuty + legalBrokerFees + renovationCost;
     
     // Monthly expenditure
-    const monthlyMortgagePayment = (mortgageAmount * (mortgageRate / 100) / 12) + (arrangementFee / (mortgageYears * 12));
+    const monthlyMortgagePayment = inputs.purchaseMethod === 'mortgage'
+      ? (mortgageAmount * (mortgageRate / 100) / 12) + (arrangementFee / (mortgageYears * 12))
+      : 0; // No mortgage payments if buying with cash
     
     // Management fees - different for Airbnb vs AST
     const managementFees = inputs.rentalType === 'airbnb' 
@@ -209,10 +221,14 @@ export default function BTLCalculator() {
     // ROI (using net annual profit after corporation tax)
     const roi = (netAnnualProfit / totalMoneyIn) * 100;
     
-    // Mortgage stress test (5.5% rate) - uses different rental values
+    // Mortgage stress test (5.5% rate) - only relevant for mortgage purchases
     const stressTestRate = 5.5;
-    const stressTestMonthlyPayment = (mortgageAmount * (stressTestRate / 100) / 12);
-    const minRequiredRent = stressTestMonthlyPayment * 1.25;
+    const stressTestMonthlyPayment = inputs.purchaseMethod === 'mortgage' 
+      ? (mortgageAmount * (stressTestRate / 100) / 12)
+      : 0;
+    const minRequiredRent = inputs.purchaseMethod === 'mortgage' 
+      ? stressTestMonthlyPayment * 1.25
+      : 0;
     
     // For stress test comparison - use estimated long term rent for Airbnb, actual rent for AST
     const stressTestRentalIncome = inputs.rentalType === 'airbnb' ? inputs.estimatedLongTermRent : inputs.monthlyRentAST;
@@ -236,7 +252,7 @@ export default function BTLCalculator() {
       roi: roi.toFixed(2),
       minRequiredRent: minRequiredRent.toFixed(2),
       stressTestRentalIncome: stressTestRentalIncome.toFixed(2),
-      passesStressTest: stressTestRentalIncome >= minRequiredRent
+      passesStressTest: inputs.purchaseMethod === 'mortgage' ? stressTestRentalIncome >= minRequiredRent : true // Always pass if no mortgage
     });
   }, [inputs]);
 
@@ -296,8 +312,24 @@ export default function BTLCalculator() {
                     value={inputs.depositPercent}
                     onChange={(e) => handleInputChange('depositPercent', e.target.value)}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={inputs.purchaseMethod === 'cash'}
                   />
                 </div>
+                {inputs.purchaseMethod === 'cash' && (
+                  <p className="text-xs text-gray-500 mt-1">100% cash purchase</p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Method</label>
+                <select
+                  value={inputs.purchaseMethod}
+                  onChange={(e) => setInputs(prev => ({ ...prev, purchaseMethod: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="mortgage">With Mortgage</option>
+                  <option value="cash">Cash Purchase</option>
+                </select>
               </div>
               
               <div>
@@ -353,68 +385,70 @@ export default function BTLCalculator() {
             </div>
             
             {/* Mortgage Details */}
-            <div className="bg-green-50 rounded-lg p-6 space-y-4">
-              <h2 className="font-semibold text-lg text-green-900 flex items-center gap-2">
-                <Calculator className="w-5 h-5" />
-                Mortgage Details
-              </h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate %</label>
-                <div className="relative">
-                  <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={inputs.mortgageRate}
-                    onChange={(e) => handleInputChange('mortgageRate', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term (Years)</label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.mortgageYears}
-                    onChange={(e) => handleInputChange('mortgageYears', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Arrangement Fee</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.arrangementFee}
-                    onChange={(e) => handleInputChange('arrangementFee', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              {inputs.rentalType === 'airbnb' && (
+            {inputs.purchaseMethod === 'mortgage' && (
+              <div className="bg-green-50 rounded-lg p-6 space-y-4">
+                <h2 className="font-semibold text-lg text-green-900 flex items-center gap-2">
+                  <Calculator className="w-5 h-5" />
+                  Mortgage Details
+                </h2>
+                
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate %</label>
+                  <div className="relative">
+                    <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={inputs.mortgageRate}
+                      onChange={(e) => handleInputChange('mortgageRate', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term (Years)</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.mortgageYears}
+                      onChange={(e) => handleInputChange('mortgageYears', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Arrangement Fee</label>
                   <div className="relative">
                     <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="number"
-                      value={inputs.estimatedLongTermRent}
-                      onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
+                      value={inputs.arrangementFee}
+                      onChange={(e) => handleInputChange('arrangementFee', e.target.value)}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
                 </div>
-              )}
-            </div>
+                
+                {inputs.rentalType === 'airbnb' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
+                    <div className="relative">
+                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.estimatedLongTermRent}
+                        onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Rental Income */}
             <div className="bg-purple-50 rounded-lg p-6 space-y-4">
