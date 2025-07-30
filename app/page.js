@@ -304,23 +304,6 @@ export default function BTLCalculator() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Deposit %</label>
-                <div className="relative">
-                  <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.depositPercent}
-                    onChange={(e) => handleInputChange('depositPercent', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    disabled={inputs.purchaseMethod === 'cash'}
-                  />
-                </div>
-                {inputs.purchaseMethod === 'cash' && (
-                  <p className="text-xs text-gray-500 mt-1">100% cash purchase</p>
-                )}
-              </div>
-              
-              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Method</label>
                 <select
                   value={inputs.purchaseMethod}
@@ -331,6 +314,21 @@ export default function BTLCalculator() {
                   <option value="cash">Cash Purchase</option>
                 </select>
               </div>
+              
+              {inputs.purchaseMethod === 'mortgage' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Deposit %</label>
+                  <div className="relative">
+                    <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.depositPercent}
+                      onChange={(e) => handleInputChange('depositPercent', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              )}
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
@@ -577,7 +575,7 @@ export default function BTLCalculator() {
               <h3 className="font-semibold text-lg text-blue-900 mb-4">Initial Investment</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-700">Deposit</span>
+                  <span className="text-gray-700">{inputs.purchaseMethod === 'mortgage' ? 'Deposit' : 'Purchase Price'}</span>
                   <span className="font-medium">{formatCurrency(calculations.depositAmount)}</span>
                 </div>
                 <div className="flex justify-between">
@@ -607,10 +605,12 @@ export default function BTLCalculator() {
                   <span className="text-gray-700">Rental Income</span>
                   <span className="font-medium text-green-700">+{formatCurrency(calculations.monthlyIncomeFromRental)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Mortgage</span>
-                  <span className="font-medium text-red-700">-{formatCurrency(calculations.monthlyMortgagePayment)}</span>
-                </div>
+                {inputs.purchaseMethod === 'mortgage' && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Mortgage</span>
+                    <span className="font-medium text-red-700">-{formatCurrency(calculations.monthlyMortgagePayment)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-700">Management</span>
                   <span className="font-medium text-red-700">-{formatCurrency(calculations.managementFees)}</span>
@@ -661,25 +661,27 @@ export default function BTLCalculator() {
           </div>
           
           {/* Mortgage Stress Test */}
-          <div className="mt-6 bg-orange-50 rounded-lg p-6">
-            <h3 className="font-semibold text-lg text-orange-900 mb-2">Mortgage Stress Test (5.5%)</h3>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-700">Minimum Required Rent: {formatCurrency(calculations.minRequiredRent)}/month</p>
-                <p className="text-gray-700">
-                  {inputs.rentalType === 'airbnb' ? 'Estimated Long Term Rent' : 'Your AST Rent'}: {formatCurrency(calculations.stressTestRentalIncome)}/month
+          {inputs.purchaseMethod === 'mortgage' && (
+            <div className="mt-6 bg-orange-50 rounded-lg p-6">
+              <h3 className="font-semibold text-lg text-orange-900 mb-2">Mortgage Stress Test (5.5%)</h3>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-700">Minimum Required Rent: {formatCurrency(calculations.minRequiredRent)}/month</p>
+                  <p className="text-gray-700">
+                    {inputs.rentalType === 'airbnb' ? 'Estimated Long Term Rent' : 'Your AST Rent'}: {formatCurrency(calculations.stressTestRentalIncome)}/month
+                  </p>
+                </div>
+                <div className={`text-2xl font-bold ${calculations.passesStressTest ? 'text-green-600' : 'text-red-600'}`}>
+                  {calculations.passesStressTest ? '✅ PASS' : '❌ FAIL'}
+                </div>
+              </div>
+              {inputs.rentalType === 'airbnb' && (
+                <p className="text-xs text-gray-500 mt-2">
+                  * Stress test uses estimated long-term rental value, not Airbnb income
                 </p>
-              </div>
-              <div className={`text-2xl font-bold ${calculations.passesStressTest ? 'text-green-600' : 'text-red-600'}`}>
-                {calculations.passesStressTest ? '✅ PASS' : '❌ FAIL'}
-              </div>
+              )}
             </div>
-            {inputs.rentalType === 'airbnb' && (
-              <p className="text-xs text-gray-500 mt-2">
-                * Stress test uses estimated long-term rental value, not Airbnb income
-              </p>
-            )}
-          </div>
+          )}
           
           {/* Stamp Duty Breakdown */}
           <div className="mt-6 bg-indigo-50 rounded-lg p-6">
@@ -725,8 +727,8 @@ export default function BTLCalculator() {
               <p className="text-2xl font-bold text-gray-900">{inputs.rentalType === 'airbnb' ? calculations.daysOccupiedPerMonth : 'AST'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">Mortgage Amount</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(calculations.mortgageAmount)}</p>
+              <p className="text-sm text-gray-600">{inputs.purchaseMethod === 'mortgage' ? 'Mortgage Amount' : 'Cash Purchase'}</p>
+              <p className="text-2xl font-bold text-gray-900">{inputs.purchaseMethod === 'mortgage' ? formatCurrency(calculations.mortgageAmount) : 'No Mortgage'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-600">Monthly Expenses</p>
