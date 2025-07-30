@@ -186,10 +186,24 @@ export default function BTLCalculator() {
     // Profitability
     const monthlyProfit = monthlyIncomeAirbnb - totalMonthlyExpenditure;
     const annualProfit = monthlyProfit * 12;
-    const grossAnnualIncome = monthlyIncomeAirbnb * 12;
     
-    // Corporation tax (19% on annual profit)
-    const corporationTax = Math.max(0, annualProfit * 0.19);
+    // Corporation tax calculation with UK thresholds (2025 rates)
+    let corporationTax = 0;
+    if (annualProfit > 0) {
+      if (annualProfit <= 50000) {
+        // Small profits rate: 19%
+        corporationTax = annualProfit * 0.19;
+      } else if (annualProfit <= 250000) {
+        // Marginal relief zone: gradual increase from 19% to 25%
+        // Standard calculation: 25% with marginal relief deduction
+        const standardTax = annualProfit * 0.25;
+        const marginalRelief = (250000 - annualProfit) * (3/200); // 3/200 = 0.015 marginal relief fraction
+        corporationTax = standardTax - marginalRelief;
+      } else {
+        // Main rate: 25%
+        corporationTax = annualProfit * 0.25;
+      }
+    }
     const netAnnualProfit = annualProfit - corporationTax;
     
     // ROI
