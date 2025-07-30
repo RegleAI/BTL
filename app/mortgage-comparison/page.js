@@ -10,14 +10,20 @@ export default function MortgageComparison() {
     if (typeof window !== 'undefined') {
       const btlData = localStorage.getItem('btlCalculatorData');
       if (btlData) {
-        const data = JSON.parse(btlData);
-        return data.mortgageAmount || 315000;
+        try {
+          const data = JSON.parse(btlData);
+          return data.mortgageAmount || 315000;
+        } catch (error) {
+          console.error('Error loading BTL data:', error);
+          return 315000;
+        }
       }
     }
     return 315000; // Default fallback
   };
 
-  const [mortgages, setMortgages] = useState([
+  // Default mortgage data
+  const getDefaultMortgages = () => [
     {
       id: 1,
       name: 'Option 1',
@@ -48,9 +54,75 @@ export default function MortgageComparison() {
       brokerFee: 0,
       paymentType: 'repayment'
     }
-  ]);
+  ];
 
+  const [mortgages, setMortgages] = useState(getDefaultMortgages());
   const [calculations, setCalculations] = useState({});
+
+  // Load saved mortgage data from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedMortgageData = localStorage.getItem('mortgageInputs');
+      if (savedMortgageData) {
+        try {
+          const parsedData = JSON.parse(savedMortgageData);
+          // Update loan amounts with current BTL data if available
+          const currentMortgageAmount = getDefaultMortgageAmount();
+          const updatedMortgages = parsedData.map(mortgage => ({
+            ...mortgage,
+            loanAmount: currentMortgageAmount // Always use latest from BTL calculator
+          }));
+          setMortgages(updatedMortgages);
+        } catch (error) {
+          console.error('Error loading mortgage data:', error);
+          setMortgages(getDefaultMortgages());
+        }
+      }
+    }
+  }, []);
+
+  // Save mortgage inputs to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mortgageInputs', JSON.stringify(mortgages));
+    }
+  }, [mortgages]);
+
+  // Update loan amounts when BTL data changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleStorageChange = () => {
+        const currentMortgageAmount = getDefaultMortgageAmount();
+        setMortgages(prev => prev.map(mortgage => ({
+          ...mortgage,
+          loanAmount: currentMortgageAmount
+        })));
+      };
+
+      // Listen for storage changes (when BTL calculator updates data)
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also check periodically for localStorage changes from the same tab
+      const interval = setInterval(() => {
+        const currentMortgageAmount = getDefaultMortgageAmount();
+        setMortgages(prev => {
+          const needsUpdate = prev.some(mortgage => mortgage.loanAmount !== currentMortgageAmount);
+          if (needsUpdate) {
+            return prev.map(mortgage => ({
+              ...mortgage,
+              loanAmount: currentMortgageAmount
+            }));
+          }
+          return prev;
+        });
+      }, 1000);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }
+  }, []);
 
   // Calculate mortgage details for each option
   useEffect(() => {
@@ -198,6 +270,7 @@ export default function MortgageComparison() {
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">Auto-synced from BTL calculator</p>
                   </div>
                   
                   <div>
