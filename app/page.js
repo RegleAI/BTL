@@ -29,19 +29,20 @@ export default function BTLCalculator() {
     let stampDuty = 0;
     
     if (country === 'england') {
-      // England Stamp Duty Land Tax rates (as of 2024/2025)
+      // England Stamp Duty Land Tax rates (as of April 2025)
       if (propertyType === 'first') {
-        // First-time buyer rates
-        if (price <= 425000) {
-          // No stamp duty on first £425,000
+        // First-time buyer rates (April 2025 thresholds)
+        if (price <= 300000) {
+          // No stamp duty on first £300,000
           stampDuty = 0;
-        } else if (price <= 625000) {
-          // 5% on portion from £425,001 to £625,000
-          stampDuty = (price - 425000) * 0.05;
+        } else if (price <= 500000) {
+          // 5% on portion from £300,001 to £500,000
+          stampDuty = (price - 300000) * 0.05;
         } else {
-          // First-time buyer relief not available above £625,000 - use standard rates
+          // First-time buyer relief not available above £500,000 - use standard rates
           const bands = [
-            { limit: 250000, rate: 0 },
+            { limit: 125000, rate: 0 },
+            { limit: 250000, rate: 0.02 },
             { limit: 925000, rate: 0.05 },
             { limit: 1500000, rate: 0.10 },
             { limit: Infinity, rate: 0.12 }
@@ -56,9 +57,10 @@ export default function BTLCalculator() {
           }
         }
       } else if (propertyType === 'next') {
-        // Standard residential rates
+        // Standard residential rates (April 2025 thresholds)
         const bands = [
-          { limit: 250000, rate: 0 },
+          { limit: 125000, rate: 0 },
+          { limit: 250000, rate: 0.02 },
           { limit: 925000, rate: 0.05 },
           { limit: 1500000, rate: 0.10 },
           { limit: Infinity, rate: 0.12 }
@@ -72,12 +74,13 @@ export default function BTLCalculator() {
           previousLimit = band.limit;
         }
       } else {
-        // Additional property - 3% surcharge on top of standard rates
+        // Additional property - 5% surcharge on top of standard rates (Oct 2024 increase)
         const bands = [
-          { limit: 250000, rate: 0.03 },
-          { limit: 925000, rate: 0.08 },
-          { limit: 1500000, rate: 0.13 },
-          { limit: Infinity, rate: 0.15 }
+          { limit: 125000, rate: 0.05 },
+          { limit: 250000, rate: 0.07 },
+          { limit: 925000, rate: 0.10 },
+          { limit: 1500000, rate: 0.15 },
+          { limit: Infinity, rate: 0.17 }
         ];
         
         let previousLimit = 0;
@@ -89,26 +92,9 @@ export default function BTLCalculator() {
         }
       }
     } else {
-      // Wales Land Transaction Tax rates (as of 2024/2025)
-      if (propertyType === 'first') {
-        // First-time buyer rates in Wales
-        const bands = [
-          { limit: 225000, rate: 0 },
-          { limit: 400000, rate: 0.06 },
-          { limit: 750000, rate: 0.075 },
-          { limit: 1500000, rate: 0.10 },
-          { limit: Infinity, rate: 0.12 }
-        ];
-        
-        let previousLimit = 0;
-        for (const band of bands) {
-          if (price <= previousLimit) break;
-          const taxableAmount = Math.min(price, band.limit) - previousLimit;
-          stampDuty += taxableAmount * band.rate;
-          previousLimit = band.limit;
-        }
-      } else if (propertyType === 'next') {
-        // Standard residential rates in Wales
+      // Wales Land Transaction Tax rates (as of Dec 2024)
+      if (propertyType === 'first' || propertyType === 'next') {
+        // Main residential rates (same for first-time and home movers)
         const bands = [
           { limit: 225000, rate: 0 },
           { limit: 400000, rate: 0.06 },
@@ -125,14 +111,14 @@ export default function BTLCalculator() {
           previousLimit = band.limit;
         }
       } else {
-        // Additional property in Wales - higher rates
+        // Higher residential rates for additional properties (Dec 2024 rates)
         const bands = [
-          { limit: 180000, rate: 0.04 },
-          { limit: 250000, rate: 0.075 },
-          { limit: 400000, rate: 0.09 },
-          { limit: 750000, rate: 0.115 },
-          { limit: 1500000, rate: 0.14 },
-          { limit: Infinity, rate: 0.16 }
+          { limit: 180000, rate: 0.05 },
+          { limit: 250000, rate: 0.09 },
+          { limit: 400000, rate: 0.115 },
+          { limit: 750000, rate: 0.14 },
+          { limit: 1500000, rate: 0.165 },
+          { limit: Infinity, rate: 0.18 }
         ];
         
         let previousLimit = 0;
@@ -605,10 +591,10 @@ export default function BTLCalculator() {
             </div>
             <div className="mt-3 text-sm text-gray-600">
               {inputs.propertyType === 'additional' && (
-                <p>* Includes {inputs.country === 'england' ? '3%' : 'higher rate'} surcharge for additional properties</p>
+                <p>* {inputs.country === 'england' ? 'Includes 5% surcharge for additional properties (increased Oct 2024)' : 'Uses higher residential rates for additional properties (updated Dec 2024)'}</p>
               )}
-              {inputs.propertyType === 'first' && inputs.country === 'england' && inputs.purchasePrice > 625000 && (
-                <p>* First-time buyer relief not available above £625,000</p>
+              {inputs.propertyType === 'first' && inputs.country === 'england' && inputs.purchasePrice > 500000 && (
+                <p>* First-time buyer relief not available above £500,000</p>
               )}
             </div>
           </div>
