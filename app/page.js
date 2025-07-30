@@ -210,8 +210,8 @@ export default function BTLCalculator() {
     }
     const netAnnualProfit = annualProfit - corporationTax;
     
-    // ROI
-    const roi = (annualProfit / totalMoneyIn) * 100;
+    // ROI (using net annual profit after corporation tax)
+    const roi = (netAnnualProfit / totalMoneyIn) * 100;
     
     // Mortgage stress test (5.5% rate)
     const stressTestRate = 5.5;
@@ -569,7 +569,6 @@ export default function BTLCalculator() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-700">Minimum Required Rent: {formatCurrency(calculations.minRequiredRent)}/month</p>
-                <p className="text-gray-700">Your Expected Rent: {formatCurrency(calculations.monthlyIncomeAirbnb)}/month</p>
               </div>
               <div className={`text-2xl font-bold ${calculations.passesStressTest ? 'text-green-600' : 'text-red-600'}`}>
                 {calculations.passesStressTest ? '✅ PASS' : '❌ FAIL'}
