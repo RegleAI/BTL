@@ -13,13 +13,15 @@ export default function BTLCalculator() {
     managementFeePercent: 18,
     occupancyRate: 70,
     avgPricePerNight: 180,
+    monthlyRentAST: 1800,
     councilTax: 183.75,
     utilities: 150,
     renovationCost: 5000,
     legalBrokerFees: 2328,
     arrangementFee: 4000,
     country: 'england',
-    propertyType: 'additional'
+    propertyType: 'additional',
+    rentalType: 'airbnb'
   });
 
   const [calculations, setCalculations] = useState({});
@@ -157,6 +159,8 @@ export default function BTLCalculator() {
     // Calculate derived values
     const daysOccupiedPerMonth = (365 * (occupancyRate / 100)) / 12;
     const monthlyIncomeAirbnb = daysOccupiedPerMonth * avgPricePerNight;
+    const monthlyIncomeFromRental = inputs.rentalType === 'airbnb' ? monthlyIncomeAirbnb : inputs.monthlyRentAST;
+    
     const depositAmount = purchasePrice * (depositPercent / 100);
     const mortgageAmount = purchasePrice - depositAmount;
     const stampDuty = calculateStampDuty(purchasePrice, country, propertyType);
@@ -166,11 +170,16 @@ export default function BTLCalculator() {
     
     // Monthly expenditure
     const monthlyMortgagePayment = (mortgageAmount * (mortgageRate / 100) / 12) + (arrangementFee / (mortgageYears * 12));
-    const managementFees = (monthlyIncomeAirbnb * (managementFeePercent / 100)) + 300;
+    
+    // Management fees - different for Airbnb vs AST
+    const managementFees = inputs.rentalType === 'airbnb' 
+      ? (monthlyIncomeFromRental * (managementFeePercent / 100)) + 300  // Airbnb: % + fixed fee
+      : monthlyIncomeFromRental * (managementFeePercent / 100);         // AST: % only
+    
     const totalMonthlyExpenditure = monthlyMortgagePayment + managementFees + councilTax + utilities;
     
     // Profitability
-    const monthlyProfit = monthlyIncomeAirbnb - totalMonthlyExpenditure;
+    const monthlyProfit = monthlyIncomeFromRental - totalMonthlyExpenditure;
     const annualProfit = monthlyProfit * 12;
     
     // Corporation tax calculation with UK thresholds (2025 rates)
@@ -207,6 +216,7 @@ export default function BTLCalculator() {
     setCalculations({
       daysOccupiedPerMonth: daysOccupiedPerMonth.toFixed(1),
       monthlyIncomeAirbnb: monthlyIncomeAirbnb.toFixed(2),
+      monthlyIncomeFromRental: monthlyIncomeFromRental.toFixed(2),
       depositAmount,
       mortgageAmount,
       stampDuty: stampDuty.toFixed(0),
@@ -221,7 +231,7 @@ export default function BTLCalculator() {
       netAnnualProfit: netAnnualProfit.toFixed(2),
       roi: roi.toFixed(2),
       minRequiredRent: minRequiredRent.toFixed(2),
-      passesStressTest: monthlyIncomeAirbnb >= minRequiredRent
+      passesStressTest: monthlyIncomeFromRental >= minRequiredRent
     });
   }, [inputs]);
 
@@ -389,47 +399,93 @@ export default function BTLCalculator() {
             <div className="bg-purple-50 rounded-lg p-6 space-y-4">
               <h2 className="font-semibold text-lg text-purple-900 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
-                Rental Income (Airbnb)
+                Rental Income
               </h2>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Average Price per Night</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.avgPricePerNight}
-                    onChange={(e) => handleInputChange('avgPricePerNight', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Rental Type</label>
+                <select
+                  value={inputs.rentalType}
+                  onChange={(e) => setInputs(prev => ({ ...prev, rentalType: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="airbnb">Airbnb (Short Let)</option>
+                  <option value="ast">AST (Long Term Let)</option>
+                </select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Occupancy Rate %</label>
-                <div className="relative">
-                  <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.occupancyRate}
-                    onChange={(e) => handleInputChange('occupancyRate', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
-                <div className="relative">
-                  <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.managementFeePercent}
-                    onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
+              {inputs.rentalType === 'airbnb' ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Average Price per Night</label>
+                    <div className="relative">
+                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.avgPricePerNight}
+                        onChange={(e) => handleInputChange('avgPricePerNight', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Occupancy Rate %</label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.occupancyRate}
+                        onChange={(e) => handleInputChange('occupancyRate', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee % + Fixed</label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.managementFeePercent}
+                        onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Plus £300/month fixed fee</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Rent (AST)</label>
+                    <div className="relative">
+                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.monthlyRentAST}
+                        onChange={(e) => handleInputChange('monthlyRentAST', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.managementFeePercent}
+                        onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Percentage only, no fixed fee</p>
+                  </div>
+                </>
+              )}
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Council Tax/Business Rates</label>
@@ -494,7 +550,7 @@ export default function BTLCalculator() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-700">Rental Income</span>
-                  <span className="font-medium text-green-700">+{formatCurrency(calculations.monthlyIncomeAirbnb)}</span>
+                  <span className="font-medium text-green-700">+{formatCurrency(calculations.monthlyIncomeFromRental)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-700">Mortgage</span>
@@ -602,8 +658,8 @@ export default function BTLCalculator() {
           {/* Additional Metrics */}
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">Days Occupied/Month</p>
-              <p className="text-2xl font-bold text-gray-900">{calculations.daysOccupiedPerMonth}</p>
+              <p className="text-sm text-gray-600">{inputs.rentalType === 'airbnb' ? 'Days Occupied/Month' : 'Rental Type'}</p>
+              <p className="text-2xl font-bold text-gray-900">{inputs.rentalType === 'airbnb' ? calculations.daysOccupiedPerMonth : 'AST'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-600">Mortgage Amount</p>
