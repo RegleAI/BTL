@@ -253,6 +253,13 @@ export default function BTLCalculator() {
       stressTestRentalIncome: stressTestRentalIncome.toFixed(2),
       passesStressTest: inputs.purchaseMethod === 'mortgage' ? stressTestRentalIncome >= minRequiredRent : true // Always pass if no mortgage
     });
+
+    // Save mortgage amount to localStorage for mortgage comparison page
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('btlCalculatorData', JSON.stringify({ 
+        mortgageAmount: mortgageAmount 
+      }));
+    }
   }, [inputs]);
 
   const handleInputChange = (field, value) => {
