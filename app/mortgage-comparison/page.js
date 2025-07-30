@@ -5,39 +5,48 @@ import { BarChart3, Percent, PoundSterling, Calendar, Trophy, TrendingDown } fro
 import Navigation from '../../components/Navigation';
 
 export default function MortgageComparison() {
+  // Get mortgage amount from BTL calculator (stored in localStorage or default)
+  const getDefaultMortgageAmount = () => {
+    if (typeof window !== 'undefined') {
+      const btlData = localStorage.getItem('btlCalculatorData');
+      if (btlData) {
+        const data = JSON.parse(btlData);
+        return data.mortgageAmount || 315000;
+      }
+    }
+    return 315000; // Default fallback
+  };
+
   const [mortgages, setMortgages] = useState([
     {
       id: 1,
       name: 'Option 1',
-      loanAmount: 315000,
+      loanAmount: getDefaultMortgageAmount(),
       interestRate: 4.9,
-      termYears: 25,
+      initialTermYears: 5,
       arrangementFee: 4000,
-      monthlyFee: 0,
       brokerFee: 0,
-      legalFees: 800
+      paymentType: 'repayment'
     },
     {
       id: 2,
       name: 'Option 2',
-      loanAmount: 315000,
+      loanAmount: getDefaultMortgageAmount(),
       interestRate: 5.2,
-      termYears: 25,
+      initialTermYears: 5,
       arrangementFee: 2000,
-      monthlyFee: 15,
       brokerFee: 2500,
-      legalFees: 800
+      paymentType: 'repayment'
     },
     {
       id: 3,
       name: 'Option 3',
-      loanAmount: 315000,
+      loanAmount: getDefaultMortgageAmount(),
       interestRate: 4.7,
-      termYears: 25,
+      initialTermYears: 5,
       arrangementFee: 5999,
-      monthlyFee: 0,
       brokerFee: 0,
-      legalFees: 800
+      paymentType: 'repayment'
     }
   ]);
 
@@ -48,36 +57,50 @@ export default function MortgageComparison() {
     const newCalculations = {};
 
     mortgages.forEach(mortgage => {
-      const { loanAmount, interestRate, termYears, arrangementFee, monthlyFee, brokerFee, legalFees } = mortgage;
+      const { loanAmount, interestRate, initialTermYears, arrangementFee, brokerFee, paymentType } = mortgage;
       
-      // Monthly payment calculation using standard mortgage formula
-      const monthlyRate = interestRate / 100 / 12;
-      const numberOfPayments = termYears * 12;
-      const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
-                            (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+      // Total amount to finance (loan + fees rolled into mortgage)
+      const totalFinanced = loanAmount + arrangementFee + brokerFee;
       
-      // Total costs over the term
-      const totalMonthlyPayments = monthlyPayment * numberOfPayments;
-      const totalMonthlyFees = monthlyFee * numberOfPayments;
-      const totalInterest = totalMonthlyPayments - loanAmount;
-      const upfrontCosts = arrangementFee + brokerFee + legalFees;
-      const totalCost = totalMonthlyPayments + totalMonthlyFees + upfrontCosts;
+      let monthlyPayment;
+      let totalInterest;
+      let totalCost;
+      
+      if (paymentType === 'repayment') {
+        // Repayment mortgage calculation
+        const monthlyRate = interestRate / 100 / 12;
+        const numberOfPayments = initialTermYears * 12;
+        
+        if (monthlyRate === 0) {
+          monthlyPayment = totalFinanced / numberOfPayments;
+        } else {
+          monthlyPayment = totalFinanced * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+                          (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+        }
+        
+        const totalPayments = monthlyPayment * numberOfPayments;
+        totalInterest = totalPayments - totalFinanced;
+        totalCost = totalPayments;
+      } else {
+        // Interest-only mortgage calculation
+        monthlyPayment = (totalFinanced * (interestRate / 100)) / 12;
+        const totalInterestPayments = monthlyPayment * initialTermYears * 12;
+        totalInterest = totalInterestPayments;
+        // Total cost includes interest payments plus the principal repayment at the end
+        totalCost = totalInterestPayments + totalFinanced;
+      }
       
       // First year costs (useful for cash flow planning)
-      const firstYearPayments = monthlyPayment * 12;
-      const firstYearFees = monthlyFee * 12;
-      const firstYearTotal = firstYearPayments + firstYearFees + upfrontCosts;
+      const firstYearTotal = monthlyPayment * 12;
       
-      // APR calculation (simplified - includes arrangement fee spread over term)
-      const effectiveRate = ((totalCost - loanAmount) / loanAmount / termYears) * 100;
+      // Effective rate calculation (total cost vs original loan amount over term)
+      const effectiveRate = ((totalCost - loanAmount) / loanAmount / initialTermYears) * 100;
 
       newCalculations[mortgage.id] = {
         monthlyPayment: monthlyPayment.toFixed(2),
-        totalMonthlyPayments: totalMonthlyPayments.toFixed(0),
-        totalMonthlyFees: totalMonthlyFees.toFixed(0),
         totalInterest: totalInterest.toFixed(0),
-        upfrontCosts: upfrontCosts.toFixed(0),
         totalCost: totalCost.toFixed(0),
+        totalFinanced: totalFinanced.toFixed(0),
         firstYearTotal: firstYearTotal.toFixed(0),
         effectiveRate: effectiveRate.toFixed(2)
       };
@@ -192,16 +215,30 @@ export default function MortgageComparison() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Term (Years)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Initial Term (Years)</label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="number"
-                        value={mortgage.termYears}
-                        onChange={(e) => handleInputChange(mortgage.id, 'termYears', e.target.value)}
+                        value={mortgage.initialTermYears}
+                        onChange={(e) => handleInputChange(mortgage.id, 'initialTermYears', e.target.value)}
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Type</label>
+                    <select
+                      value={mortgage.paymentType}
+                      onChange={(e) => setMortgages(prev => prev.map(m => 
+                        m.id === mortgage.id ? { ...m, paymentType: e.target.value } : m
+                      ))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="repayment">Repayment</option>
+                      <option value="interestOnly">Interest Only</option>
+                    </select>
                   </div>
                   
                   <div>
@@ -218,19 +255,6 @@ export default function MortgageComparison() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Fee</label>
-                    <div className="relative">
-                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={mortgage.monthlyFee}
-                        onChange={(e) => handleInputChange(mortgage.id, 'monthlyFee', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Broker Fee</label>
                     <div className="relative">
                       <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -241,19 +265,7 @@ export default function MortgageComparison() {
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Legal Fees</label>
-                    <div className="relative">
-                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={mortgage.legalFees}
-                        onChange={(e) => handleInputChange(mortgage.id, 'legalFees', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Rolled into mortgage amount</p>
                   </div>
                 </div>
               ))}
@@ -290,8 +302,13 @@ export default function MortgageComparison() {
                       </div>
                       
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Upfront Costs</span>
-                        <span className="font-medium">{formatCurrency(calc.upfrontCosts)}</span>
+                        <span className="text-gray-700">Payment Type</span>
+                        <span className="font-medium">{mortgage.paymentType === 'repayment' ? 'Repayment' : 'Interest Only'}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Total Financed</span>
+                        <span className="font-medium">{formatCurrency(calc.totalFinanced)}</span>
                       </div>
                       
                       <div className="flex justify-between">
@@ -365,7 +382,7 @@ export default function MortgageComparison() {
                     <tr className="bg-gray-50">
                       <th className="border border-gray-300 px-4 py-2 text-left">Mortgage</th>
                       <th className="border border-gray-300 px-4 py-2 text-right">Monthly Payment</th>
-                      <th className="border border-gray-300 px-4 py-2 text-right">Upfront Costs</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right">Payment Type</th>
                       <th className="border border-gray-300 px-4 py-2 text-right">Total Interest</th>
                       <th className="border border-gray-300 px-4 py-2 text-right">Total Cost</th>
                       <th className="border border-gray-300 px-4 py-2 text-right">Difference</th>
@@ -389,7 +406,7 @@ export default function MortgageComparison() {
                             {formatCurrencyDecimal(calc.monthlyPayment)}
                           </td>
                           <td className="border border-gray-300 px-4 py-2 text-right">
-                            {formatCurrency(calc.upfrontCosts)}
+                            {mortgage.paymentType === 'repayment' ? 'Repayment' : 'Interest Only'}
                           </td>
                           <td className="border border-gray-300 px-4 py-2 text-right">
                             {formatCurrency(calc.totalInterest)}
