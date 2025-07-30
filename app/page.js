@@ -521,23 +521,19 @@ export default function BTLCalculator() {
             <div className="bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg p-6">
               <h3 className="font-semibold text-lg text-purple-900 mb-4">Annual Returns</h3>
               <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Gross Income</span>
-                  <span className="font-medium">{formatCurrency(calculations.grossAnnualIncome)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Corporation Tax</span>
-                  <span className="font-medium text-red-700">-{formatCurrency(calculations.corporationTax)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Net Annual Profit</span>
-                  <span className="font-medium">{formatCurrency(calculations.netAnnualProfit)}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-purple-200">
+                <div className="flex justify-between pt-2 border-b border-purple-200 pb-2">
                   <span className="text-gray-700 font-semibold">Annual Profit</span>
                   <span className={`font-bold ${parseFloat(calculations.annualProfit) >= 0 ? 'text-purple-900' : 'text-red-900'}`}>
                     {formatCurrency(calculations.annualProfit)}
                   </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Corporation Tax (19%)</span>
+                  <span className="font-medium text-red-700">-{formatCurrency(calculations.corporationTax)}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-purple-200">
+                  <span className="text-gray-700 font-semibold">Net Annual Profit</span>
+                  <span className="font-bold text-purple-900">{formatCurrency(calculations.netAnnualProfit)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-700 font-semibold">ROI</span>
