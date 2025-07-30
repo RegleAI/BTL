@@ -188,10 +188,9 @@ export default function BTLCalculator() {
     const annualProfit = monthlyProfit * 12;
     const grossAnnualIncome = monthlyIncomeAirbnb * 12;
     
-    // Corporation tax (19% on profit after deducting legal fees and renovation)
-    const taxableProfit = grossAnnualIncome - legalBrokerFees - renovationCost;
-    const corporationTax = Math.max(0, taxableProfit * 0.19);
-    const netAnnualIncome = grossAnnualIncome - corporationTax;
+    // Corporation tax (19% on annual profit)
+    const corporationTax = Math.max(0, annualProfit * 0.19);
+    const netAnnualProfit = annualProfit - corporationTax;
     
     // ROI
     const roi = (annualProfit / totalMoneyIn) * 100;
@@ -215,7 +214,7 @@ export default function BTLCalculator() {
       annualProfit: annualProfit.toFixed(2),
       grossAnnualIncome: grossAnnualIncome.toFixed(2),
       corporationTax: corporationTax.toFixed(2),
-      netAnnualIncome: netAnnualIncome.toFixed(2),
+      netAnnualProfit: netAnnualProfit.toFixed(2),
       roi: roi.toFixed(2),
       minRequiredRent: minRequiredRent.toFixed(2),
       passesStressTest: monthlyIncomeAirbnb >= minRequiredRent
@@ -531,8 +530,8 @@ export default function BTLCalculator() {
                   <span className="font-medium text-red-700">-{formatCurrency(calculations.corporationTax)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-700">Net Income</span>
-                  <span className="font-medium">{formatCurrency(calculations.netAnnualIncome)}</span>
+                  <span className="text-gray-700">Net Annual Profit</span>
+                  <span className="font-medium">{formatCurrency(calculations.netAnnualProfit)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-purple-200">
                   <span className="text-gray-700 font-semibold">Annual Profit</span>
