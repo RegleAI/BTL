@@ -184,10 +184,8 @@ export default function BTLCalculator() {
       ? (mortgageAmount * (mortgageRate / 100) / 12) + (arrangementFee / (mortgageYears * 12))
       : 0; // No mortgage payments if buying with cash
     
-    // Management fees - different for Airbnb vs AST
-    const managementFees = inputs.rentalType === 'airbnb' 
-      ? (monthlyIncomeFromRental * (managementFeePercent / 100)) + 300  // Airbnb: % + fixed fee
-      : monthlyIncomeFromRental * (managementFeePercent / 100);         // AST: % only
+    // Management fees - percentage only for both types
+    const managementFees = monthlyIncomeFromRental * (managementFeePercent / 100);
     
     const totalMonthlyExpenditure = monthlyMortgagePayment + managementFees + councilTax + utilities;
     
@@ -496,7 +494,7 @@ export default function BTLCalculator() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee % + Fixed</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
                     <div className="relative">
                       <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
@@ -506,7 +504,6 @@ export default function BTLCalculator() {
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Plus £300/month fixed fee</p>
                   </div>
                 </>
               ) : (
@@ -535,7 +532,6 @@ export default function BTLCalculator() {
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Percentage only, no fixed fee</p>
                   </div>
                 </>
               )}
