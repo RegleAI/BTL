@@ -111,14 +111,14 @@ export default function BTLCalculator() {
           previousLimit = band.limit;
         }
       } else {
-        // Higher residential rates for additional properties (Dec 2024 rates)
+        // Higher residential rates for additional properties (current rates from gov.wales)
         const bands = [
           { limit: 180000, rate: 0.05 },
-          { limit: 250000, rate: 0.09 },
-          { limit: 400000, rate: 0.115 },
-          { limit: 750000, rate: 0.14 },
-          { limit: 1500000, rate: 0.165 },
-          { limit: Infinity, rate: 0.18 }
+          { limit: 250000, rate: 0.085 },
+          { limit: 400000, rate: 0.10 },
+          { limit: 750000, rate: 0.125 },
+          { limit: 1500000, rate: 0.15 },
+          { limit: Infinity, rate: 0.17 }
         ];
         
         let previousLimit = 0;
@@ -591,7 +591,7 @@ export default function BTLCalculator() {
             </div>
             <div className="mt-3 text-sm text-gray-600">
               {inputs.propertyType === 'additional' && (
-                <p>* {inputs.country === 'england' ? 'Includes 5% surcharge for additional properties (increased Oct 2024)' : 'Uses higher residential rates for additional properties (updated Dec 2024)'}</p>
+                <p>* {inputs.country === 'england' ? 'Includes 5% surcharge for additional properties (increased Oct 2024)' : 'Uses higher residential rates for additional properties'}</p>
               )}
               {inputs.propertyType === 'first' && inputs.country === 'england' && inputs.purchasePrice > 500000 && (
                 <p>* First-time buyer relief not available above £500,000</p>
