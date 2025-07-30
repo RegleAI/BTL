@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calculator, Home, TrendingUp, Percent, PoundSterling, Calendar } from 'lucide-react';
+import Navigation from '../components/Navigation';
 
 export default function BTLCalculator() {
   const [inputs, setInputs] = useState({
@@ -272,473 +273,476 @@ export default function BTLCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-          <div className="flex items-center gap-3 mb-8">
-            <Home className="w-10 h-10 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Buy-to-Let Property Viability Calculator</h1>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Property Details */}
-            <div className="bg-blue-50 rounded-lg p-6 space-y-4">
-              <h2 className="font-semibold text-lg text-blue-900 flex items-center gap-2">
-                <Home className="w-5 h-5" />
-                Property Details
-              </h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.purchasePrice}
-                    onChange={(e) => handleInputChange('purchasePrice', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Method</label>
-                <select
-                  value={inputs.purchaseMethod}
-                  onChange={(e) => setInputs(prev => ({ ...prev, purchaseMethod: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="mortgage">With Mortgage</option>
-                  <option value="cash">Cash Purchase</option>
-                </select>
-              </div>
-              
-              {inputs.purchaseMethod === 'mortgage' && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Deposit %</label>
-                  <div className="relative">
-                    <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="number"
-                      value={inputs.depositPercent}
-                      onChange={(e) => handleInputChange('depositPercent', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              )}
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                <select
-                  value={inputs.country}
-                  onChange={(e) => setInputs(prev => ({ ...prev, country: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="england">England</option>
-                  <option value="wales">Wales</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
-                <select
-                  value={inputs.propertyType}
-                  onChange={(e) => setInputs(prev => ({ ...prev, propertyType: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="first">First Home</option>
-                  <option value="next">Next Home (Main Residence)</option>
-                  <option value="additional">Additional Property / BTL</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Renovation & Furniture</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.renovationCost}
-                    onChange={(e) => handleInputChange('renovationCost', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Legal & Broker Fees</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.legalBrokerFees}
-                    onChange={(e) => handleInputChange('legalBrokerFees', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+            <div className="flex items-center gap-3 mb-8">
+              <Home className="w-10 h-10 text-blue-600" />
+              <h1 className="text-3xl font-bold text-gray-900">Buy-to-Let Property Viability Calculator</h1>
             </div>
             
-            {/* Mortgage Details */}
-            {inputs.purchaseMethod === 'mortgage' && (
-              <div className="bg-green-50 rounded-lg p-6 space-y-4">
-                <h2 className="font-semibold text-lg text-green-900 flex items-center gap-2">
-                  <Calculator className="w-5 h-5" />
-                  Mortgage Details
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {/* Property Details */}
+              <div className="bg-blue-50 rounded-lg p-6 space-y-4">
+                <h2 className="font-semibold text-lg text-blue-900 flex items-center gap-2">
+                  <Home className="w-5 h-5" />
+                  Property Details
                 </h2>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate %</label>
-                  <div className="relative">
-                    <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={inputs.mortgageRate}
-                      onChange={(e) => handleInputChange('mortgageRate', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term (Years)</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="number"
-                      value={inputs.mortgageYears}
-                      onChange={(e) => handleInputChange('mortgageYears', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Arrangement Fee</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
                   <div className="relative">
                     <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="number"
-                      value={inputs.arrangementFee}
-                      onChange={(e) => handleInputChange('arrangementFee', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      value={inputs.purchasePrice}
+                      onChange={(e) => handleInputChange('purchasePrice', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
                 
-                {inputs.rentalType === 'airbnb' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Method</label>
+                  <select
+                    value={inputs.purchaseMethod}
+                    onChange={(e) => setInputs(prev => ({ ...prev, purchaseMethod: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="mortgage">With Mortgage</option>
+                    <option value="cash">Cash Purchase</option>
+                  </select>
+                </div>
+                
+                {inputs.purchaseMethod === 'mortgage' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Deposit %</label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.depositPercent}
+                        onChange={(e) => handleInputChange('depositPercent', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <select
+                    value={inputs.country}
+                    onChange={(e) => setInputs(prev => ({ ...prev, country: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="england">England</option>
+                    <option value="wales">Wales</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
+                  <select
+                    value={inputs.propertyType}
+                    onChange={(e) => setInputs(prev => ({ ...prev, propertyType: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="first">First Home</option>
+                    <option value="next">Next Home (Main Residence)</option>
+                    <option value="additional">Additional Property / BTL</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Renovation & Furniture</label>
+                  <div className="relative">
+                    <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.renovationCost}
+                      onChange={(e) => handleInputChange('renovationCost', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Legal & Broker Fees</label>
+                  <div className="relative">
+                    <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.legalBrokerFees}
+                      onChange={(e) => handleInputChange('legalBrokerFees', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mortgage Details */}
+              {inputs.purchaseMethod === 'mortgage' && (
+                <div className="bg-green-50 rounded-lg p-6 space-y-4">
+                  <h2 className="font-semibold text-lg text-green-900 flex items-center gap-2">
+                    <Calculator className="w-5 h-5" />
+                    Mortgage Details
+                  </h2>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate %</label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={inputs.mortgageRate}
+                        onChange={(e) => handleInputChange('mortgageRate', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term (Years)</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={inputs.mortgageYears}
+                        onChange={(e) => handleInputChange('mortgageYears', e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Arrangement Fee</label>
                     <div className="relative">
                       <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="number"
-                        value={inputs.estimatedLongTermRent}
-                        onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
+                        value={inputs.arrangementFee}
+                        onChange={(e) => handleInputChange('arrangementFee', e.target.value)}
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
                   </div>
+                  
+                  {inputs.rentalType === 'airbnb' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Long Term Rent</label>
+                      <div className="relative">
+                        <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="number"
+                          value={inputs.estimatedLongTermRent}
+                          onChange={(e) => handleInputChange('estimatedLongTermRent', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">For mortgage stress test purposes</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Rental Income */}
+              <div className="bg-purple-50 rounded-lg p-6 space-y-4">
+                <h2 className="font-semibold text-lg text-purple-900 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Rental Income
+                </h2>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Rental Type</label>
+                  <select
+                    value={inputs.rentalType}
+                    onChange={(e) => setInputs(prev => ({ ...prev, rentalType: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="airbnb">Airbnb (Short Let)</option>
+                    <option value="ast">AST (Long Term Let)</option>
+                  </select>
+                </div>
+                
+                {inputs.rentalType === 'airbnb' ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Average Price per Night</label>
+                      <div className="relative">
+                        <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="number"
+                          value={inputs.avgPricePerNight}
+                          onChange={(e) => handleInputChange('avgPricePerNight', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Occupancy Rate %</label>
+                      <div className="relative">
+                        <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="number"
+                          value={inputs.occupancyRate}
+                          onChange={(e) => handleInputChange('occupancyRate', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
+                      <div className="relative">
+                        <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="number"
+                          value={inputs.managementFeePercent}
+                          onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Rent (AST)</label>
+                      <div className="relative">
+                        <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="number"
+                          value={inputs.monthlyRentAST}
+                          onChange={(e) => handleInputChange('monthlyRentAST', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
+                      <div className="relative">
+                        <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="number"
+                          value={inputs.managementFeePercent}
+                          onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
+                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Council Tax/Business Rates</label>
+                  <div className="relative">
+                    <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.councilTax}
+                      onChange={(e) => handleInputChange('councilTax', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Utilities & Insurance</label>
+                  <div className="relative">
+                    <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      value={inputs.utilities}
+                      onChange={(e) => handleInputChange('utilities', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Results Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Initial Investment */}
+              <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg p-6">
+                <h3 className="font-semibold text-lg text-blue-900 mb-4">Initial Investment</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">{inputs.purchaseMethod === 'mortgage' ? 'Deposit' : 'Purchase Price'}</span>
+                    <span className="font-medium">{formatCurrency(calculations.depositAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Stamp Duty</span>
+                    <span className="font-medium">{formatCurrency(calculations.stampDuty)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Legal & Broker</span>
+                    <span className="font-medium">{formatCurrency(inputs.legalBrokerFees)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Renovation</span>
+                    <span className="font-medium">{formatCurrency(inputs.renovationCost)}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-blue-200">
+                    <span className="text-gray-700 font-semibold">Total Investment</span>
+                    <span className="font-bold text-blue-900">{formatCurrency(calculations.totalMoneyIn)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Monthly Cash Flow */}
+              <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-lg p-6">
+                <h3 className="font-semibold text-lg text-green-900 mb-4">Monthly Cash Flow</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Rental Income</span>
+                    <span className="font-medium text-green-700">+{formatCurrency(calculations.monthlyIncomeFromRental)}</span>
+                  </div>
+                  {inputs.purchaseMethod === 'mortgage' && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Mortgage</span>
+                      <span className="font-medium text-red-700">-{formatCurrency(calculations.monthlyMortgagePayment)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Management</span>
+                    <span className="font-medium text-red-700">-{formatCurrency(calculations.managementFees)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Council Tax</span>
+                    <span className="font-medium text-red-700">-{formatCurrency(inputs.councilTax)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Utilities</span>
+                    <span className="font-medium text-red-700">-{formatCurrency(inputs.utilities)}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-green-200">
+                    <span className="text-gray-700 font-semibold">Monthly Profit</span>
+                    <span className={`font-bold ${parseFloat(calculations.monthlyProfit) >= 0 ? 'text-green-900' : 'text-red-900'}`}>
+                      {formatCurrency(calculations.monthlyProfit)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Annual Returns */}
+              <div className="bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg p-6">
+                <h3 className="font-semibold text-lg text-purple-900 mb-4">Annual Returns</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between pt-2 border-b border-purple-200 pb-2">
+                    <span className="text-gray-700 font-semibold">Annual Profit</span>
+                    <span className={`font-bold ${parseFloat(calculations.annualProfit) >= 0 ? 'text-purple-900' : 'text-red-900'}`}>
+                      {formatCurrency(calculations.annualProfit)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Corporation Tax ({calculations.effectiveTaxRate}%)</span>
+                    <span className="font-medium text-red-700">-{formatCurrency(calculations.corporationTax)}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-purple-200">
+                    <span className="text-gray-700 font-semibold">Net Annual Profit</span>
+                    <span className="font-bold text-purple-900">{formatCurrency(calculations.netAnnualProfit)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700 font-semibold">ROI</span>
+                    <span className={`font-bold text-2xl ${parseFloat(calculations.roi) >= 0 ? 'text-purple-900' : 'text-red-900'}`}>
+                      {calculations.roi}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Mortgage Stress Test */}
+            {inputs.purchaseMethod === 'mortgage' && (
+              <div className="mt-6 bg-orange-50 rounded-lg p-6">
+                <h3 className="font-semibold text-lg text-orange-900 mb-2">Mortgage Stress Test (5.5%)</h3>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-700">Minimum Required Rent: {formatCurrency(calculations.minRequiredRent)}/month</p>
+                    <p className="text-gray-700">
+                      {inputs.rentalType === 'airbnb' ? 'Estimated Long Term Rent' : 'Your AST Rent'}: {formatCurrency(calculations.stressTestRentalIncome)}/month
+                    </p>
+                  </div>
+                  <div className={`text-2xl font-bold ${calculations.passesStressTest ? 'text-green-600' : 'text-red-600'}`}>
+                    {calculations.passesStressTest ? '✅ PASS' : '❌ FAIL'}
+                  </div>
+                </div>
+                {inputs.rentalType === 'airbnb' && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    * Stress test uses estimated long-term rental value, not Airbnb income
+                  </p>
                 )}
               </div>
             )}
             
-            {/* Rental Income */}
-            <div className="bg-purple-50 rounded-lg p-6 space-y-4">
-              <h2 className="font-semibold text-lg text-purple-900 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Rental Income
-              </h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rental Type</label>
-                <select
-                  value={inputs.rentalType}
-                  onChange={(e) => setInputs(prev => ({ ...prev, rentalType: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                >
-                  <option value="airbnb">Airbnb (Short Let)</option>
-                  <option value="ast">AST (Long Term Let)</option>
-                </select>
-              </div>
-              
-              {inputs.rentalType === 'airbnb' ? (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Average Price per Night</label>
-                    <div className="relative">
-                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={inputs.avgPricePerNight}
-                        onChange={(e) => handleInputChange('avgPricePerNight', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Occupancy Rate %</label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={inputs.occupancyRate}
-                        onChange={(e) => handleInputChange('occupancyRate', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={inputs.managementFeePercent}
-                        onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Rent (AST)</label>
-                    <div className="relative">
-                      <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={inputs.monthlyRentAST}
-                        onChange={(e) => handleInputChange('monthlyRentAST', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Management Fee %</label>
-                    <div className="relative">
-                      <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="number"
-                        value={inputs.managementFeePercent}
-                        onChange={(e) => handleInputChange('managementFeePercent', e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Council Tax/Business Rates</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.councilTax}
-                    onChange={(e) => handleInputChange('councilTax', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Utilities & Insurance</label>
-                <div className="relative">
-                  <PoundSterling className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={inputs.utilities}
-                    onChange={(e) => handleInputChange('utilities', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Results Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Initial Investment */}
-            <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg text-blue-900 mb-4">Initial Investment</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">{inputs.purchaseMethod === 'mortgage' ? 'Deposit' : 'Purchase Price'}</span>
-                  <span className="font-medium">{formatCurrency(calculations.depositAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Stamp Duty</span>
-                  <span className="font-medium">{formatCurrency(calculations.stampDuty)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Legal & Broker</span>
-                  <span className="font-medium">{formatCurrency(inputs.legalBrokerFees)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Renovation</span>
-                  <span className="font-medium">{formatCurrency(inputs.renovationCost)}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-blue-200">
-                  <span className="text-gray-700 font-semibold">Total Investment</span>
-                  <span className="font-bold text-blue-900">{formatCurrency(calculations.totalMoneyIn)}</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Monthly Cash Flow */}
-            <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg text-green-900 mb-4">Monthly Cash Flow</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Rental Income</span>
-                  <span className="font-medium text-green-700">+{formatCurrency(calculations.monthlyIncomeFromRental)}</span>
-                </div>
-                {inputs.purchaseMethod === 'mortgage' && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Mortgage</span>
-                    <span className="font-medium text-red-700">-{formatCurrency(calculations.monthlyMortgagePayment)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Management</span>
-                  <span className="font-medium text-red-700">-{formatCurrency(calculations.managementFees)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Council Tax</span>
-                  <span className="font-medium text-red-700">-{formatCurrency(inputs.councilTax)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Utilities</span>
-                  <span className="font-medium text-red-700">-{formatCurrency(inputs.utilities)}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-green-200">
-                  <span className="text-gray-700 font-semibold">Monthly Profit</span>
-                  <span className={`font-bold ${parseFloat(calculations.monthlyProfit) >= 0 ? 'text-green-900' : 'text-red-900'}`}>
-                    {formatCurrency(calculations.monthlyProfit)}
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Annual Returns */}
-            <div className="bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg text-purple-900 mb-4">Annual Returns</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between pt-2 border-b border-purple-200 pb-2">
-                  <span className="text-gray-700 font-semibold">Annual Profit</span>
-                  <span className={`font-bold ${parseFloat(calculations.annualProfit) >= 0 ? 'text-purple-900' : 'text-red-900'}`}>
-                    {formatCurrency(calculations.annualProfit)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Corporation Tax ({calculations.effectiveTaxRate}%)</span>
-                  <span className="font-medium text-red-700">-{formatCurrency(calculations.corporationTax)}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-purple-200">
-                  <span className="text-gray-700 font-semibold">Net Annual Profit</span>
-                  <span className="font-bold text-purple-900">{formatCurrency(calculations.netAnnualProfit)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700 font-semibold">ROI</span>
-                  <span className={`font-bold text-2xl ${parseFloat(calculations.roi) >= 0 ? 'text-purple-900' : 'text-red-900'}`}>
-                    {calculations.roi}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Mortgage Stress Test */}
-          {inputs.purchaseMethod === 'mortgage' && (
-            <div className="mt-6 bg-orange-50 rounded-lg p-6">
-              <h3 className="font-semibold text-lg text-orange-900 mb-2">Mortgage Stress Test (5.5%)</h3>
-              <div className="flex items-center justify-between">
+            {/* Stamp Duty Breakdown */}
+            <div className="mt-6 bg-indigo-50 rounded-lg p-6">
+              <h3 className="font-semibold text-lg text-indigo-900 mb-2">
+                {inputs.country === 'england' ? 'Stamp Duty Land Tax' : 'Land Transaction Tax'} Breakdown
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-700">Minimum Required Rent: {formatCurrency(calculations.minRequiredRent)}/month</p>
-                  <p className="text-gray-700">
-                    {inputs.rentalType === 'airbnb' ? 'Estimated Long Term Rent' : 'Your AST Rent'}: {formatCurrency(calculations.stressTestRentalIncome)}/month
+                  <p className="text-sm text-gray-600 mb-1">Property Type</p>
+                  <p className="font-medium">
+                    {inputs.propertyType === 'first' ? 'First Home Buyer' : 
+                     inputs.propertyType === 'next' ? 'Next Home (Main Residence)' : 
+                     'Additional Property / Buy-to-Let'}
                   </p>
                 </div>
-                <div className={`text-2xl font-bold ${calculations.passesStressTest ? 'text-green-600' : 'text-red-600'}`}>
-                  {calculations.passesStressTest ? '✅ PASS' : '❌ FAIL'}
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Tax Region</p>
+                  <p className="font-medium">{inputs.country === 'england' ? 'England' : 'Wales'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
+                  <p className="font-medium">{formatCurrency(inputs.purchasePrice)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Tax Due</p>
+                  <p className="font-bold text-indigo-900 text-xl">{formatCurrency(calculations.stampDuty)}</p>
                 </div>
               </div>
-              {inputs.rentalType === 'airbnb' && (
-                <p className="text-xs text-gray-500 mt-2">
-                  * Stress test uses estimated long-term rental value, not Airbnb income
+              <div className="mt-3 text-sm text-gray-600">
+                {inputs.propertyType === 'additional' && (
+                  <p>* {inputs.country === 'england' ? 'Includes 5% surcharge for additional properties (increased Oct 2024)' : 'Uses higher residential rates for additional properties'}</p>
+                )}
+                {inputs.propertyType === 'first' && inputs.country === 'england' && inputs.purchasePrice > 500000 && (
+                  <p>* First-time buyer relief not available above £500,000</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Additional Metrics */}
+            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <p className="text-sm text-gray-600">{inputs.rentalType === 'airbnb' ? 'Days Occupied/Month' : 'Rental Type'}</p>
+                <p className="text-2xl font-bold text-gray-900">{inputs.rentalType === 'airbnb' ? calculations.daysOccupiedPerMonth : 'AST'}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <p className="text-sm text-gray-600">{inputs.purchaseMethod === 'mortgage' ? 'Mortgage Amount' : 'Cash Purchase'}</p>
+                <p className="text-2xl font-bold text-gray-900">{inputs.purchaseMethod === 'mortgage' ? formatCurrency(calculations.mortgageAmount) : 'No Mortgage'}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <p className="text-sm text-gray-600">Monthly Expenses</p>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(calculations.totalMonthlyExpenditure)}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <p className="text-sm text-gray-600">Break Even (Years)</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {parseFloat(calculations.annualProfit) > 0 ? (parseFloat(calculations.totalMoneyIn) / parseFloat(calculations.annualProfit)).toFixed(1) : 'N/A'}
                 </p>
-              )}
-            </div>
-          )}
-          
-          {/* Stamp Duty Breakdown */}
-          <div className="mt-6 bg-indigo-50 rounded-lg p-6">
-            <h3 className="font-semibold text-lg text-indigo-900 mb-2">
-              {inputs.country === 'england' ? 'Stamp Duty Land Tax' : 'Land Transaction Tax'} Breakdown
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Property Type</p>
-                <p className="font-medium">
-                  {inputs.propertyType === 'first' ? 'First Home Buyer' : 
-                   inputs.propertyType === 'next' ? 'Next Home (Main Residence)' : 
-                   'Additional Property / Buy-to-Let'}
-                </p>
               </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tax Region</p>
-                <p className="font-medium">{inputs.country === 'england' ? 'England' : 'Wales'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
-                <p className="font-medium">{formatCurrency(inputs.purchasePrice)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Tax Due</p>
-                <p className="font-bold text-indigo-900 text-xl">{formatCurrency(calculations.stampDuty)}</p>
-              </div>
-            </div>
-            <div className="mt-3 text-sm text-gray-600">
-              {inputs.propertyType === 'additional' && (
-                <p>* {inputs.country === 'england' ? 'Includes 5% surcharge for additional properties (increased Oct 2024)' : 'Uses higher residential rates for additional properties'}</p>
-              )}
-              {inputs.propertyType === 'first' && inputs.country === 'england' && inputs.purchasePrice > 500000 && (
-                <p>* First-time buyer relief not available above £500,000</p>
-              )}
-            </div>
-          </div>
-          
-          {/* Additional Metrics */}
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">{inputs.rentalType === 'airbnb' ? 'Days Occupied/Month' : 'Rental Type'}</p>
-              <p className="text-2xl font-bold text-gray-900">{inputs.rentalType === 'airbnb' ? calculations.daysOccupiedPerMonth : 'AST'}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">{inputs.purchaseMethod === 'mortgage' ? 'Mortgage Amount' : 'Cash Purchase'}</p>
-              <p className="text-2xl font-bold text-gray-900">{inputs.purchaseMethod === 'mortgage' ? formatCurrency(calculations.mortgageAmount) : 'No Mortgage'}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">Monthly Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(calculations.totalMonthlyExpenditure)}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">Break Even (Years)</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {parseFloat(calculations.annualProfit) > 0 ? (parseFloat(calculations.totalMoneyIn) / parseFloat(calculations.annualProfit)).toFixed(1) : 'N/A'}
-              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
