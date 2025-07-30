@@ -5,7 +5,8 @@ import { Calculator, Home, TrendingUp, Percent, PoundSterling, Calendar } from '
 import Navigation from '../components/Navigation';
 
 export default function BTLCalculator() {
-  const [inputs, setInputs] = useState({
+  // Default values
+  const defaultInputs = {
     purchasePrice: 420000,
     monthlyIncome: 3832.50,
     depositPercent: 25,
@@ -25,9 +26,34 @@ export default function BTLCalculator() {
     propertyType: 'additional',
     rentalType: 'airbnb',
     purchaseMethod: 'mortgage'
-  });
+  };
 
+  const [inputs, setInputs] = useState(defaultInputs);
   const [calculations, setCalculations] = useState({});
+
+  // Load saved data from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedBTLData = localStorage.getItem('btlInputs');
+      if (savedBTLData) {
+        try {
+          const parsedData = JSON.parse(savedBTLData);
+          setInputs({ ...defaultInputs, ...parsedData });
+        } catch (error) {
+          console.error('Error loading BTL data:', error);
+          // If data is corrupted, use defaults
+          setInputs(defaultInputs);
+        }
+      }
+    }
+  }, []);
+
+  // Save inputs to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('btlInputs', JSON.stringify(inputs));
+    }
+  }, [inputs]);
 
   // Calculate stamp duty based on country
   const calculateStampDuty = (price, country, propertyType) => {
