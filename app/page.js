@@ -226,7 +226,6 @@ export default function BTLCalculator() {
       totalMonthlyExpenditure: totalMonthlyExpenditure.toFixed(2),
       monthlyProfit: monthlyProfit.toFixed(2),
       annualProfit: annualProfit.toFixed(2),
-      grossAnnualIncome: grossAnnualIncome.toFixed(2),
       corporationTax: corporationTax.toFixed(2),
       netAnnualProfit: netAnnualProfit.toFixed(2),
       roi: roi.toFixed(2),
